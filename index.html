@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>魔法議會獎勵兌換表</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+      color: #f5f5f5;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #ffd369;
+      margin-bottom: 10px;
+    }
+    .multiplier {
+      font-weight: bold;
+      color: #ff9f1c;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    th {
+      background: rgba(255, 211, 105, 0.2);
+      color: #ffd369;
+    }
+    .highlight {
+      color: #ff9f1c;
+      font-weight: bold;
+    }
+    .category-row {
+      background: rgba(255, 255, 255, 0.1);
+      color: #8be9fd;
+      font-weight: bold;
+      text-align: left;
+      font-size: 1.1em;
+    }
+    td.description {
+      text-align: left;
+      color: #ffffff;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ 魔法議會獎勵兌換表 ✨</h1>
+  <p>目前魔法指數倍率：<span id="currentMultiplier" class="multiplier"></span></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>魔法咒語</th>
+        <th>魔法指數消耗</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody id="rewardTable"></tbody>
+  </table>
+
+  <script>
+    const multiplier = 1;
+
+    const rewardCategories = {
+      "✨ 實用類": [
+        { name: "✨ 簡化咒", base: 20, description: "可將甲乙本作業詞語減少一次(最少一次)。" },
+        { name: "🌀 延宕咒", base: 25, description: "可將作業延後一天繳交，需老師同意。" },
+        { name: "🔮 祈禱咒", base: 5, description: "增加一題詞語解釋在小考出現的機率。" },
+        { name: "📚 輔助咒", base: 20, description: "老師提供額外筆記或小提示一次，幫助理解。" },
+        { name: "📖 增幅咒", base: 25, description: "提供一次額外學習技巧建議。" },
+        { name: "🔔 護盾咒", base: 50, description: "未完成標準時，可獲得老師額外提醒或提示。" },
+        { name: "🔖 變形咒", base: 30, description: "導師上課時使用變形的角色上課（可能失效）。" },
+        { name: "✨ 加持咒（練習卷）", base: 0, description: "獲得老師一份額外練習卷一次。" },
+        { name: "🌟 召喚咒（挑戰卷）", base: 10, description: "挑戰額外題目，可獲魔法點數獎勵。" }
+      ],
+      "👑 特權類": [
+        { name: "☀ 午休延展咒", base: 20, description: "午休自由時間額外延長5分鐘，放鬆身心。" },
+        { name: "👫 交換座位咒", base: 35, description: "可與同學交換座位一節課（需導師同意）。" },
+        { name: "🎵 音樂掌控咒", base: 40, description: "午休音樂由你挑選（需老師審核）。" },
+        { name: "✨ 清潔替身咒", base: 50, description: "指定他人代掃一次（需同學同意）。" },
+        { name: "🔖 名牌幻化咒", base: 30, description: "可自訂自己當天稱號（又是一天帥哥美女日）。" }
+      ],
+      "🎮 娛樂類": [
+        { name: "🎲 魔法寶箱咒", base: 80, description: "抽一次神秘寶箱，獲得隨機小獎品。" },
+        { name: "🃏 幸運占卜咒", base: 50, description: "抽一次，獲得特殊提示或小獎勵。" },
+        { name: "🐉 徽章收集咒", base: 60, description: "抽一次，獲得限定徽章一枚。" },
+        { name: "✨ 魔法遊戲咒", base: 40, description: "可參加一次老師的小遊戲挑戰。" },
+        { name: "✨ 稀有收藏咒", base: 70, description: "製作出一個魔法蒐集徽章（指定名稱，須導師審核）。" },
+        { name: "🎨 創作增幅咒", base: 50, description: "老師協助完成一幅小型創作（你確定嗎...？）。" },
+        { name: "🎁 魔法禮物咒(小)", base: 50, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🎁 魔法禮物咒(中)", base: 75, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🎁 魔法禮物咒(大)", base: 100, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🌟 特殊稱號咒", base: 120, description: "可更改專屬魔法稱號。" },
+        { name: "🔑 隱藏任務咒", base: 70, description: "獲得下一週任務線索提示一次。" }
+      ],
+      "💖 友情與貢獻類": [
+        { name: "🤝 助人祝福咒", base: 30, description: "可幫助同學完成一次小任務。" },
+        { name: "🏅 團隊光環咒", base: 80, description: "替全組爭取一次加分機會。" },
+        { name: "🎖 榮耀代言咒", base: 100, description: "幫同學解除一次小懲罰（需同意）。" },
+        { name: "🗣 議會提案咒", base: 80, description: "可向老師提一項班級改善建議。" },
+        { name: "👑 班級小議長咒", base: 120, description: "可擔任班級小議長一天。" },
+        { name: "🌟 榮譽通行咒", base: 150, description: "獲得一天『班級榮譽通行證』稱號，可優先發言或參與活動。" },
+        { name: "📝 公告美化咒", base: 50, description: "老師幫你美化一次班級公告或手寫鼓勵語。" },
+        { name: "🎨 創意傳遞咒", base: 60, description: "可幫助同學完成一次創意作業，老師加持效果更佳。" },
+        { name: "🎁 小禮物傳遞咒", base: 40, description: "可向同學送一次小禮物，促進友誼。" },
+        { name: "🌈 團隊加成咒", base: 80, description: "全組在課堂遊戲或活動中獲得一次加分效果。" },
+        { name: "🕊 和諧祝福咒", base: 70, description: "可協助班級化解一次小衝突或誤會。" },
+        { name: "🔗 合作增幅咒", base: 60, description: "指定一次小組合作任務，由你指導策略。" },
+        { name: "💌 表揚信咒", base: 50, description: "老師幫你寫一封表揚信給同學或自己保存。" },
+        { name: "🗺 導師指引咒", base: 40, description: "可請老師指導一次學習或活動策略。" },
+        { name: "🛡 榮譽守護咒", base: 90, description: "保護自己一次班級榮譽或分數，不受扣減。" },
+        { name: "✨ 特別任務咒", base: 120, description: "獲得一次魔法議會特別任務卡，可完成小挑戰獲額外獎勵。" },
+        { name: "📸 回憶留存咒", base: 80, description: "可請老師與你或小組拍攝班級回憶照一次。" },
+        { name: "🐉 魔法寵物養成咒", base: 100, description: "領養一隻徽章寵物（LV1），可在遊戲或活動中使用。" },
+        { name: "🦄 寵物升級咒", base: 100, description: "升級一隻已領養的徽章寵物（LV+1）。" },
+        { name: "💫 魔法稱號咒", base: 150, description: "自訂一個特殊稱號，可在班級中使用。"}
+      ]
+    };
+
+    function renderTable() {
+      const tbody = document.getElementById("rewardTable");
+      tbody.innerHTML = "";
+
+      for (const [category, rewards] of Object.entries(rewardCategories)) {
+        const categoryRow = document.createElement("tr");
+        categoryRow.innerHTML = `<td colspan="3" class="category-row">${category}</td>`;
+        tbody.appendChild(categoryRow);
+
+        rewards.forEach(r => {
+          const cost = Math.round(r.base * multiplier);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${r.name}</td>
+            <td class="highlight">${cost}</td>
+            <td class="description">${r.description}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      document.getElementById("currentMultiplier").textContent = multiplier;
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
