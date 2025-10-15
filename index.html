@@ -55,7 +55,7 @@
   </style>
 </head>
 <body>
-  <h1>✨ 魔法議會獎勵兌換表 ✨</h1>
+  <h1>✨ 魔法議會指數施咒表 ✨</h1>
   <p>目前魔法指數倍率：<span id="currentMultiplier" class="multiplier"></span></p>
 
   <table>
@@ -73,58 +73,61 @@
     const multiplier = 1;
 
     const rewardCategories = {
-      "✨ 實用類": [
-        { name: "✨ 簡化咒", base: 20, description: "可將甲乙本作業詞語減少一次(最少一次)。" },
-        { name: "🌀 延宕咒", base: 25, description: "可將作業延後一天繳交，需老師同意。" },
+      "✨ 實用咒": [
+        { name: "✨ 簡化咒", base: 5, description: "可將甲乙本作業詞語減少一次(最少一次)。" },
+        { name: "🌀 延宕咒", base: 5, description: "可將作業延後一天繳交，需老師同意。" },
         { name: "🔮 祈禱咒", base: 5, description: "增加一題詞語解釋在小考出現的機率。" },
-        { name: "📚 輔助咒", base: 20, description: "老師提供額外筆記或小提示一次，幫助理解。" },
-        { name: "📖 增幅咒", base: 25, description: "提供一次額外學習技巧建議。" },
-        { name: "🔔 護盾咒", base: 50, description: "未完成標準時，可獲得老師額外提醒或提示。" },
-        { name: "🔖 變形咒", base: 30, description: "導師上課時使用變形的角色上課（可能失效）。" },
-        { name: "✨ 加持咒（練習卷）", base: 0, description: "獲得老師一份額外練習卷一次。" },
-        { name: "🌟 召喚咒（挑戰卷）", base: 10, description: "挑戰額外題目，可獲魔法點數獎勵。" }
+        { name: "📚 輔助咒", base: 5, description: "老師提醒全班聽考額外小提示一次，幫助理解。" },
+        { name: "📖 增幅咒", base: 5, description: "老師提醒全班額外學習技巧建議。" },
+        { name: "🔔 護盾咒", base: 10, description: "未達到某事件標準時，可獲得老師額外提醒或提示。" },
+        { name: "🔖 變形咒", base: 20, description: "導師上課時使用變形的角色上課（可能失效）。" },
+        { name: "✨ 加持咒（練習卷）", base: 1, description: "獲得老師一份額外練習卷一次。" },
+        { name: "🌟 召喚咒（挑戰卷）", base: 10, description: "挑戰額外題目，可獲魔法指數抽獎。" }
       ],
-      "👑 特權類": [
-        { name: "☀ 午休延展咒", base: 20, description: "午休自由時間額外延長5分鐘，放鬆身心。" },
-        { name: "👫 交換座位咒", base: 35, description: "可與同學交換座位一節課（需導師同意）。" },
-        { name: "🎵 音樂掌控咒", base: 40, description: "午休音樂由你挑選（需老師審核）。" },
-        { name: "✨ 清潔替身咒", base: 50, description: "指定他人代掃一次（需同學同意）。" },
-        { name: "🔖 名牌幻化咒", base: 30, description: "可自訂自己當天稱號（又是一天帥哥美女日）。" }
+      "👑 特殊咒": [
+        { name: "☀ 午休延展咒", base: 5, description: "午休自由時間額外延長5分鐘，放鬆身心（需導師同意）。" },
+        { name: "✨ 交換座位咒", base: 30, description: "可與同學交換座位一節課（需導師同意）。" },
+        { name: "🎵 音樂掌控咒", base: 5, description: "午休音樂由你挑選（需老師審核）。" },
+        { name: "✨ 清潔替身咒", base: 10, description: "指定他人代掃一次（需同學同意）。" },
+        { name: "🔖 名牌幻化咒", base: 5, description: "可自訂自己當天稱號（又是一天帥哥美女日）。" },
+        { name: "💫 特殊稱號咒", base: 100, description: "自訂一個特殊稱號。"},
+        { name: "💫 魔法榮譽咒", base: 10, description: "蓋榮譽卡一格。"}
       ],
-      "🎮 娛樂類": [
-        { name: "🎲 魔法寶箱咒", base: 80, description: "抽一次神秘寶箱，獲得隨機小獎品。" },
-        { name: "🃏 幸運占卜咒", base: 50, description: "抽一次，獲得特殊提示或小獎勵。" },
-        { name: "🐉 徽章收集咒", base: 60, description: "抽一次，獲得限定徽章一枚。" },
-        { name: "✨ 魔法遊戲咒", base: 40, description: "可參加一次老師的小遊戲挑戰。" },
-        { name: "✨ 稀有收藏咒", base: 70, description: "製作出一個魔法蒐集徽章（指定名稱，須導師審核）。" },
-        { name: "🎨 創作增幅咒", base: 50, description: "老師協助完成一幅小型創作（你確定嗎...？）。" },
-        { name: "🎁 魔法禮物咒(小)", base: 50, description: "抽一次老師的禮物，象徵鼓勵。" },
-        { name: "🎁 魔法禮物咒(中)", base: 75, description: "抽一次老師的禮物，象徵鼓勵。" },
-        { name: "🎁 魔法禮物咒(大)", base: 100, description: "抽一次老師的禮物，象徵鼓勵。" },
-        { name: "🌟 特殊稱號咒", base: 120, description: "可更改專屬魔法稱號。" },
-        { name: "🔑 隱藏任務咒", base: 70, description: "獲得下一週任務線索提示一次。" }
-      ],
-      "💖 友情與貢獻類": [
-        { name: "🤝 助人祝福咒", base: 30, description: "可幫助同學完成一次小任務。" },
-        { name: "🏅 團隊光環咒", base: 80, description: "替全組爭取一次加分機會。" },
-        { name: "🎖 榮耀代言咒", base: 100, description: "幫同學解除一次小懲罰（需同意）。" },
-        { name: "🗣 議會提案咒", base: 80, description: "可向老師提一項班級改善建議。" },
-        { name: "👑 班級小議長咒", base: 120, description: "可擔任班級小議長一天。" },
-        { name: "🌟 榮譽通行咒", base: 150, description: "獲得一天『班級榮譽通行證』稱號，可優先發言或參與活動。" },
-        { name: "📝 公告美化咒", base: 50, description: "老師幫你美化一次班級公告或手寫鼓勵語。" },
-        { name: "🎨 創意傳遞咒", base: 60, description: "可幫助同學完成一次創意作業，老師加持效果更佳。" },
-        { name: "🎁 小禮物傳遞咒", base: 40, description: "可向同學送一次小禮物，促進友誼。" },
-        { name: "🌈 團隊加成咒", base: 80, description: "全組在課堂遊戲或活動中獲得一次加分效果。" },
-        { name: "🕊 和諧祝福咒", base: 70, description: "可協助班級化解一次小衝突或誤會。" },
-        { name: "🔗 合作增幅咒", base: 60, description: "指定一次小組合作任務，由你指導策略。" },
-        { name: "💌 表揚信咒", base: 50, description: "老師幫你寫一封表揚信給同學或自己保存。" },
-        { name: "🗺 導師指引咒", base: 40, description: "可請老師指導一次學習或活動策略。" },
-        { name: "🛡 榮譽守護咒", base: 90, description: "保護自己一次班級榮譽或分數，不受扣減。" },
-        { name: "✨ 特別任務咒", base: 120, description: "獲得一次魔法議會特別任務卡，可完成小挑戰獲額外獎勵。" },
-        { name: "📸 回憶留存咒", base: 80, description: "可請老師與你或小組拍攝班級回憶照一次。" },
+      "🎮 娛樂咒": [
+        { name: "🃏 幸運占卜咒", base: 3, description: "今天運勢如何？" },
+        { name: "✨ 魔法遊戲咒", base: 10, description: "可參加一次老師的小遊戲挑戰。" },
+        { name: "✨ 稀有徽章咒", base: 100, description: "製作出一個魔法徽章（指定名稱，須導師審核）。" },
+        { name: "🎨 創作增幅咒", base: 5, description: "老師協助完成一幅小型創作（你確定嗎...？）。" },
         { name: "🐉 魔法寵物養成咒", base: 100, description: "領養一隻徽章寵物（LV1），可在遊戲或活動中使用。" },
-        { name: "🦄 寵物升級咒", base: 100, description: "升級一隻已領養的徽章寵物（LV+1）。" },
-        { name: "💫 魔法稱號咒", base: 150, description: "自訂一個特殊稱號，可在班級中使用。"}
+        { name: "🦄 寵物升級咒", base: 100, description: "升級一隻已領養的徽章寵物（LV+1）。" }
+      ],
+      "🤝 合作咒": [
+        { name: "🤝 助人祝福咒", base: 10, description: "可幫助同學完成一次小任務。" },
+        { name: "🏅 團隊光環咒", base: 30, description: "與整排同學共同完成一項合作任務。" },
+        { name: "🔗 任務規劃咒", base: 50, description: "指定一次合作任務，由你規劃安排(任務獎勵可與導師討論)。" },
+        { name: "✨ 特別任務咒", base: 80, description: "獲得一次特別任務，可獲額外獎勵。" },
+        { name: "🔑 隱藏任務咒", base: 100, description: "完成隱藏任務，有機會獲得【賢者之石】。" },
+        { name: "🗺 任務指引咒", base: 5, description: "進行任務時，可請導師提供任務線索。" },
+        { name: "🌈 團隊加成咒", base: 100, description: "整排同學獲得額外一次獎勵效果。" },
+        { name: "🎖 榮耀代言咒", base: 30, description: "幫同學解除一次小懲罰（需導師同意）。" },
+        { name: "📝 公告美化咒", base: 20, description: "老師幫你製作或美化一次班級公告或鼓勵語(施比受更有福)。" },
+        { name: "🎨 功德咒", base: 1, description: "功德值+1（無任何效果）。" },
+        { name: "🛡 榮譽守護咒", base: 50, description: "保護自己一次指數不受扣除(免死金牌)。" },
+        { name: "📸 回憶留存咒", base: 5, description: "可請導師協助你拍攝回憶照一次。" }
+      ],
+      "🃏 未知類": [
+        { name: "🤝 魔法隨機咒", base: 30, description: "施展一個隨機咒語。" },
+        { name: "🎁 隨機傳遞咒", base: 40, description: "隨機贈送同學送一次隨機咒。" },
+        { name: "🎲 魔法寶箱咒", base: 80, description: "抽一次神秘寶箱，獲得隨機小獎品。" },
+        { name: "🐉 徽章收集咒", base: 60, description: "隨機獲得，有機會獲得限定徽章一枚。" },
+        { name: "🎁 魔法禮物咒(小)", base: 20, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🎁 魔法禮物咒(中)", base: 50, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🎁 魔法禮物咒(大)", base: 100, description: "抽一次老師的禮物，象徵鼓勵。" },
+        { name: "🌟 魔法稱號咒", base: 10, description: "可隨機獲得一個魔法稱號。" },
+        { name: "💫 指數再生咒", base: 0, description: "【消耗賢者之石*1】施展指數再生咒，獲得隨機指數。"}
+      ],
+      "🎮 職位咒": [
+        { name: "👑 榮耀議長咒", base: 50, description: "可擔任班級榮耀小議長一天（特殊職位，協助議長）。" }
       ]
     };
 
